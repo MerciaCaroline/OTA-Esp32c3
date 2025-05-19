@@ -129,8 +129,7 @@ void loop()
 ```
 
 ## Referencias
-O codigo completo está disponivel em [examples](../examples/esp_ota_server.ino)
+O codigo completo está disponivel em [examples](../examples)
 
-Veja o cogigo completo e mais informações em:
-https://www.makerhero.com/blog/atualizacao-de-software-ota-over-the-air-no-esp32/?srsltid=AfmBOoqDFvrbp68h9WQedmuc6kGOPKhI1Np1q63s5VHb7bFCbEliVQ8e
+Veja o cogigo completo e mais informações em [Makerhero](https://www.makerhero.com/blog/atualizacao-de-software-ota-over-the-air-no-esp32/?srsltid=AfmBOoqDFvrbp68h9WQedmuc6kGOPKhI1Np1q63s5VHb7bFCbEliVQ8e)
 
