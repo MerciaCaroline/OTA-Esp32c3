@@ -65,4 +65,8 @@ Primeiro, a camada de software pré-criptografada descriptografa o firmware (rec
 
 ## Referencias 
 
-Sauba mais em [Espressif: process overview](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/system/ota.html#ota-process-overview)
+Saiba mais em 
+
+[Espressif: process overview](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/system/ota.html#ota-process-overview)
+
+[Medium: Ota updates framework](https://medium.com/the-esp-journal/ota-updates-framework-ab5438e30c12)
