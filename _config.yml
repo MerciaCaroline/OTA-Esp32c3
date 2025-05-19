@@ -1,0 +1,5 @@
+title: OTA ESP32-C3 Documentation
+theme: minima
+markdown: kramdown
+exclude:
+  - README.md
