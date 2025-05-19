@@ -52,4 +52,32 @@ Para obter a estrutura `esp_app_desc_t` de outra partição OTA, use `esp_ota_ge
 
 - Versao de segurança: Versão de segurança incorporada na imagem.  Agrupa imagens de firmware com base em correções contra vulnerabilidades de segurança (por exemplo, certificado CA revogado).  Se voce quer evitar  a sobrecarga   caso o aplicativo do servidor tenha uma versão de segurança inferior à do aplicativo em execução, obtenha o secure_version das versões e compare. Use `esp_efuse_check_secure_version(new_app_info.secure_version)`continue o download caso a função retorne verdadeira e , caso contrário, aborte.
 
+```c
+....
+bool image_header_was_checked = false;
+while (1) {
+    int data_read = esp_http_client_read(client, ota_write_data, BUFFSIZE);
+    ...
+    if (data_read > 0) {
+        if (image_header_was_checked == false) {
+            esp_app_desc_t new_app_info;
+            if (data_read > sizeof(esp_image_header_t) + sizeof(esp_image_segment_header_t) + sizeof(esp_app_desc_t)) {
+                // check current version with downloading
+                if (esp_efuse_check_secure_version(new_app_info.secure_version) == false) {
+                  ESP_LOGE(TAG, "This a new app can not be downloaded due to a secure version is lower than stored in efuse.");
+                  http_cleanup(client);
+                  task_fatal_error();
+                }
+
+                image_header_was_checked = true;
+
+                esp_ota_begin(update_partition, OTA_SIZE_UNKNOWN, &update_handle);
+            }
+        }
+        esp_ota_write( update_handle, (const void *)ota_write_data, data_read);
+    }
+}
+...
+```
+
 Saiba mais em [Espressif: App image format](https://docs.espressif.com/projects/esp-idf/en/latest/esp32c3/api-reference/system/app_image_format.html)

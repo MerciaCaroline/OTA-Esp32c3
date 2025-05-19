@@ -44,6 +44,25 @@ if (esp_ota_get_state_partition(running, &ota_state) == ESP_OK) {
 ! A função de diagnóstico pode ser decidida com base em vários pontos, como por exemplo, conexão À rede WIFI, pois garante a possibilidade da próxima atualização OTA.
 
 ## Anti-Rollback
+O rollback oferece a capacidade de retornar ao firmware anterior, mas às vezes isso pode não ser uma operação desejada. Muitas vezes, uma atualização de firmware de um dispositivo também pode modificar algumas credenciais de segurança (por exemplo, o certificado do servidor) incorporadas nele. Isso implica que todas as imagens de firmware mais antigas estão praticamente obsoletas e, se executadas, podem apresentar riscos de segurança. O recurso " Anti-rollback de Firmware " pode ajudar a mitigar esses problemas. Anti-rollback é um recurso que permite executar firmware somente se a versão de segurança incorporada for superior à programada na EFuse `secure_version` 
+
+
+## OTA e Flash encryption 
+
+O firmware pode ser pré-criptografado antes de hospedado no servidor. A distribuição de firmware pré-criptografada garante que a imagem do firmware permaneça criptografada durante o transporte do servidor para o dispositivo (independentemente da segurança de transporte subjacente).
+O firmware pré-criptografado é um esquema completamente independente da Criptografia Flash. Mesmo para dispositivos onde a criptografia flash não está habilitada, pode ser necessário que a imagem do firmware via OTA ainda seja criptografada.
+Primeiro, a camada de software pré-criptografada descriptografa o firmware (recebido pela rede) no dispositivo e, em seguida, criptografa novamente o conteúdo usando a criptografia flash da plataforma e a chave do EFuse (se habilitada) antes de gravar na flash.
+
+## Notas importantes
+- Os recursos discutidos acima, como "rollback" e "anti-rollback", devem ser habilitados antes do release. Esses recursos habilitam determinados caminhos de código no bootloader, que por si só não podem ser atualizados em campo.
+-  Recomenda-se que qualquer tipo de modo de economia de energia (por exemplo, modo de espera do modem WiFi) seja desativado durante a atualização OTA. Isso permite uma taxa de transferência ideal para transferência de dados.
+- Durante a atualização OTA, o flash passa por operações de programação (apagar/escrever) e, portanto, o cache flash permanece desabilitado. Se houver alguma interrupção que precise ser mantida habilitada, ela deverá ser registrada com seu manipulador na memória de código interna (IRAM). Mais informações sobre isso podem ser encontradas [aqui](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/spi_flash/index.html) .
+
+## fluxograma 
+
+![Fluxograma simplificado de atualização OTA](../img/fluxograma-ota.png)
 
 
 ## Referencias 
+
+Sauba mais em [Espressif: process overview](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-reference/system/ota.html#ota-process-overview)

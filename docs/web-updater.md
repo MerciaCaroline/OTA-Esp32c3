@@ -21,7 +21,7 @@ Ainda, neste caso é possível colocar uma autenticação (usuário e senha), pe
 
 ## Estrutura codigo
 
-! Esse código foi implementado n oesp32, verifique possiveis diferenças para o esp32-c3
+! Esse código foi implementado no esp32 utilizando arduino IDE, verifique possiveis diferenças para o esp32-c3
 
 ```c
 #include <WiFi.h>
@@ -131,5 +131,5 @@ void loop()
 ## Referencias
 O codigo completo está disponivel em [examples](../examples)
 
-Veja o cogigo completo e mais informações em [Makerhero](https://www.makerhero.com/blog/atualizacao-de-software-ota-over-the-air-no-esp32/?srsltid=AfmBOoqDFvrbp68h9WQedmuc6kGOPKhI1Np1q63s5VHb7bFCbEliVQ8e)
+Veja o codigo completo e mais informações em [Makerhero](https://www.makerhero.com/blog/atualizacao-de-software-ota-over-the-air-no-esp32/?srsltid=AfmBOoqDFvrbp68h9WQedmuc6kGOPKhI1Np1q63s5VHb7bFCbEliVQ8e)
 
