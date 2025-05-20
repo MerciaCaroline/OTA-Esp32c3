@@ -8,8 +8,12 @@ O OTA requer a configuração das tabelas de partição do dispositivo com pelo 
 
 
 ## Transição entre partições
-O bootloader inicializa o primeiro slot OTA disponível (geralmente `ota_0`). Enquanto isso `ota_1`  está vazio. 
-Após a atualização OTA, o novo firmware ficará gravado em `ota_1`. A partição de dados `ota` é então atualizada para especificar qual partição de slot de aplicativo OTA deve ser inicializada em seguida. Assim, a partir do RESET subsequente, o bootloader sempre dará o controle ao firmware na `ota_1` (até a próxima atualização OTA).
+
+O bootloader inicializa o aplicativo de fabrica. Se nenhum aplicativo de fábrica estiver incluído na tabela de partição (partição `factory`), o primeiro slot OTA disponível (geralmente `ota_0`) é inicializado. Se houver `factory`, `ota_0`e `ota_1` não deve conter dados (todos os bytes devem ser apagados para 0xFF).  
+
+Na primeira atualização OTA, o primeiro slot OTA disponível (geralmente `ota_0`) é gravado e, a partição de dados OTA é atualizada para especificar qual partição de slot de aplicativo OTA deve ser inicializada em seguida (`ota_0`). 
+
+Na proxima atualização OTA, o novo firmware ficará gravado em `ota_1`. A partição de dados `ota` é então atualizada para especificar qual partição de slot de aplicativo OTA deve ser inicializada em seguida. Assim, a partir do RESET subsequente, o bootloader sempre dará o controle ao firmware na `ota_1` (até a próxima atualização OTA).
 
 ![Transição de layout do Flash](../img/transicao-ota-simples.png)
 

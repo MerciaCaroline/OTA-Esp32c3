@@ -5,7 +5,14 @@ title: Informações básicas
 # Informações básicas que voce precisa saber antes de começar
 
 ## Partitions table
+
 Uma única memória flash do ESP32-C3 pode conter vários aplicativos, bem como muitos tipos diferentes de dados (dados de calibração, sistemas de arquivos, armazenamento de parâmetros, etc.). Por esse motivo, uma tabela de partição é armazenada em flash com ( deslocamento padrão ) 0x8000.
+
+A biblioteca Preferences é baseada na API NVS   (Non-Volatile Storage) e salva dados na partição `nvs`. 
+
+No ESP32-C3 (e outros ESP32), os dados de calibração — como calibração de rádio, Wi-Fi, Bluetooth e ajustes de RF — são gravados em uma partição especial chamada `phy_init`.
+
+A partição `factory` no ESP32 (incluindo o ESP32-C3) é uma partição de aplicativo usada para armazenar o firmware "de fábrica", ou seja, o primeiro firmware gravado na placa, antes de qualquer atualização OTA.
 
 ``` csv
 # ESP-IDF Partition Table
@@ -18,14 +25,18 @@ ota_0,    app,  ota_0,   0x110000, 1M,
 ota_1,    app,  ota_1,   0x210000, 1M,
 
 ```
+
+
 ![Layout típico do aplicativo flash](../img/partitions.png)
 
-`ota_0` (0x10) ... `ota_15`(0x1F) são os slots de aplicativos OTA. Quando o OTA está em uso, a partição de dados OTA configura qual slot de aplicativo o bootloader deve inicializar. Ao usar OTA, um aplicativo deve ter pelo menos dois slots de aplicativos OTA ( ota_0& ota_1).
+
+`ota_0` (0x10) ... `ota_15`(0x1F) são os slots de aplicativos OTA. Quando o OTA está em uso, a partição de dados OTA configura qual slot de aplicativo o bootloader deve inicializar. Ao usar OTA, um aplicativo deve ter pelo menos dois slots de aplicativos OTA ( `ota_0` & `ota_1`).
 
 Saiba mais sobre tabela de partições em [Espressif: partitions table](https://docs.espressif.com/projects/esp-idf/en/stable/esp32c3/api-guides/partition-tables.html)
 
 ## Application description
-O `DROM`, segmento do binário da aplicação, começa com a estrutura `esp_app_desc_t` que carrega campos específicos que descrevem o aplicativo:
+
+O segmento do binário da aplicação `DROM`, começa com a estrutura `esp_app_desc_t` que carrega campos específicos que descrevem o aplicativo:
 
 ```C
 typedef struct {
