@@ -26,6 +26,7 @@ ota_1,    app,  ota_1,   0x210000, 1M,
 
 ```
 
+![Layout típico do aplicativo flash]({{ site.baseurl }}/img/partitions.png)
 
 ![Layout típico do aplicativo flash](../img/partitions.png)
 

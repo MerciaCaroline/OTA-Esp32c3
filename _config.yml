@@ -3,3 +3,4 @@ theme: minima
 markdown: kramdown
 exclude:
   - README.md
+baseurl: "/OTA-Esp32c3"  # nome do seu repositório GitHub
