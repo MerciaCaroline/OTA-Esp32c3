@@ -41,7 +41,7 @@ otatool.py --port "/dev/ttyUSB1" read_ota_partition --name=ota_3 --output=ota_3.
 
 Antes de mais nada, certifique-se de que o otatoolmódulo foi importado. O ponto de partida para usar a API Python da ferramenta é criar um `OtatoolTarget`. 
 
-```
+```py
 import sys
 import os
 
@@ -56,7 +56,7 @@ target = OtatoolTarget("/dev/ttyUSB1")
 ```
 O objeto criado agora pode ser usado para executar operações no dispositivo de destino:
 
-```
+```py
 # Erase otadata, resetting the device to factory app
 target.erase_otadata()
 

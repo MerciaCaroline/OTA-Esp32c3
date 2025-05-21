@@ -24,6 +24,7 @@ esp_err_t do_firmware_upgrade()
     return ESP_OK;
 }
 ```
+
 ##  Verificação do servidor TLS
 A verificação do servidor é um passo crucial para garantir a segurança durante uma atualização de firmware via HTTPS. O objetivo é confirmar que o dispositivo está de fato se conectando ao servidor legítimo que hospeda a nova imagem de firmware, e não a um servidor malicioso. 
 
@@ -33,7 +34,7 @@ O trecho de código é mostrado abaixo, supondo que a imagem do firmware esteja 
 
 ```c
 esp_http_client_config_t config = { 
-     .url = "https://raw.githubusercontent.com/caminho/para/firmware", 
+     .url = "https://raw.githubusercontent.com/caminho/para/firmware.bin", 
      .cert_pem = (char *) github_server_start_pem, 
 };
 esp_err_t ret = esp_https_ota(&config); 
@@ -41,8 +42,11 @@ se (ret == ESP_OK) {
      esp_restart(); 
 }
 ```
+O workflow simplificado para atualização OTA se parece com o seguinte:
 
-O esp_http_client_config_t possui propriedades `username` e `password` para autenticação http. Entretanto o GitHub não suporta autenticação Basic para download de arquivos via HTTPS de repositórios privados. Ele usa autenticação via token (Personal Access Token - PAT) com OAuth2-style no cabeçalho Authorization.
+![Fluxo de trabalho de atualização OTA](../../img/fluxo-ota.png)
+
+O `esp_http_client_config_t` possui propriedades `username` e `password` para autenticação http. Entretanto o GitHub não suporta autenticação Basic para download de arquivos via HTTPS de repositórios privados. Ele usa autenticação via token (Personal Access Token - PAT) com OAuth2-style no cabeçalho Authorization.
 O esp nao possui OAuth2 implementado, mas há um jeito de fazer.
 
 Enviar um token que já autoriza o download sem precisar de autenticação adicional no cabeçalho HTTP
@@ -66,11 +70,9 @@ Nao funciona se
 - Autenticação OAuth2 com troca de tokens, refresh tokens, etc.
 - Situações em que o token precisa ser enviado como: 
     - `Authorization: Bearer <token>`
-    - Isso exigiria configurar um cabeçalho HTTP adicional no cliente — e o esp_https_ota() não permite isso diretamente.
+    - Isso exigiria configurar um cabeçalho HTTP adicional no cliente — e o `esp_http_client` não permite isso diretamente.
 
-O workflow simplificado para atualização OTA se parece com o seguinte:
-
-![Fluxo de trabalho de atualização OTA](../../img/fluxo-ota.png)
+Saiba mais sobre HTTP no esp clicando [Aqui](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-reference/protocols/esp_http_client.html)
 
 ## Arquivo sdkconfig.defaults
 
@@ -140,6 +142,21 @@ ota_1,    app,  ota_1,   ,        1M,
 ```
 
 ## Esqueleto função ota 
+```c
+#include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_log.h"
+#include "esp_system.h"
+#include "esp_err.h"
+#include "esp_https_ota.h"
+#include "esp_http_client.h"
+#include "esp_ota_ops.h"
+#include "esp_app_format.h"
+#include "esp_event.h"
+#include "nvs_flash.h"
+
+```
 
 ```c
 ESP_LOGI(TAG, "Starting Advanced OTA example");
@@ -204,3 +221,29 @@ if ((err == ESP_OK) && (ota_finish_err == ESP_OK)) {
     esp_restart();
 }
 ```
+
+## AtualizaçÃO OTA em grupo
+
+O `esp_https_ota()` não tem suporte embutido para atualizações em grupo, mas você pode construir isso com uma boa arquitetura de backend e lógica no firmware.
+Algumas ideias são listadas abaixo
+
+### 1 - Pull com verificação de grupo/versãop/mac no json
+Cada dispositivo:
+1. Periodicamente consulta um servidor de controle (ex: https://firmware.seuservidor.com/check)
+2. O servidor responde com:
+    ```json
+    {
+    "group_id": "2",
+    "latest_version": "1.3.2",
+    "firmware_url": "https://.../firmware_v1.3.2.bin"
+    }
+    ```
+3. O ESP fazas verificações necessárias, e se autorizado chama esp_https_ota() com a URL recebida.
+
+### 2 - Push controlado via MQTT ou HTTP long-polling
+Você pode manter os ESP32 conectados a um broker MQTT ou API WebSocket, e quando o backend enviar o comando `"atualize agora"` com o link OTA, os dispositivos executam `esp_https_ota()` imediatamente.
+! ➡️ Ideal para atualizações instantâneas, mas exige infra mais robusta.
+
+
+
+
